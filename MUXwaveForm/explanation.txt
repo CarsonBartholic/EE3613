@@ -1,0 +1,21 @@
+The wave form for the two MUX modules show the result of the operations. 
+
+If 0 is passed into the module as the op code then the value of a is assigned to result.
+If 1 is passed into the module as the op code then the value of b is assigned to result.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5 bit MUX
+You can see in the wave form that there were 4 test (each taking 10nsec).
+0nsec to 10nsec  ---> result takes the value of a when op = 0 ---> 5'b00000
+10nsec to 20nsec ---> result takes the value of a when op = 0 ---> 5'b11000
+20nsec to 30nsec ---> result takes the value of b when op = 1 ---> 5'b11110
+30nsec to 40nsec ---> result takes the value of b when op = 1 ---> 5'b11001
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+32 bit MUX
+The waveform for the 32 bit mux was too loarg to fit into one screenshot. Each of the files labled with MUX32 at the start contain a portion of the total waveform.
+You can see in the wave form that there were 4 test (each taking 10nsec).
+0nsec to 10nsec  ---> result takes the value of a when op = 0 ---> 32'b11111111111111111111111111111111
+10nsec to 20nsec ---> result takes the value of a when op = 0 ---> 32'b00000000000000000000000000000000
+20nsec to 30nsec ---> result takes the value of b when op = 1 ---> 32'b01010101010101010101010101010101
+30nsec to 40nsec ---> result takes the value of b when op = 1 ---> 32'b00000000000000001111111111111111
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
