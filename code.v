@@ -67,29 +67,20 @@ endmodule//OneBitALU
 
 
 //Next up is to design the overflow detection module
-module OverflowDetection(cin, cout, overflow);
+module OverflowDetection(cin, cout, result, op, overflow);
   input cin, cout;	//Inputs from last ALU operation needed to determine overflow (MSB operation)
+  input result;
+  input [2:0] op;
   output overflow;	//flag to be returned that indicates an oveflow
   
-  assign overflow = cin ^ cout;	//overflow occurs with different carry in and out values for MSB
+  //assign overflow = cin ^ cout;	//overflow occurs with different carry in and out values for MSB
+  assign overflow = (op[1:0] == 2'b10) && (
+    // Addition overflow check
+    (op[2] == 0 && ((cin == 0 && cout == 0 && result == 1) || (cin == 1 && cout == 1 && result == 0))) ||
+    // Subtraction overflow check
+    (op[2] == 1 && ((cin == 0 && cout == 1 && result == 1) || (cin == 1 && cout == 0 && result == 0)))
+  );
 endmodule//OverflowDetection
-
-// module OverflowDetection(a, b, result, op, overflow);
-//   input a, b; // the two sign bits
-//   input result; // the most significant bit (MSB) of result
-//   input [2:0] op; // the 3-bit operation
-//   output overflow; // overflow output flag
-
-//   // Continuous assignment for overflow
-//   assign overflow = (op[1:0] == 2'b10) && (
-//     // Addition overflow check
-//     (op[2] == 0 && ((a == 0 && b == 0 && result == 1) ||
-//                     (a == 1 && b == 1 && result == 0))) ||
-//     // Subtraction overflow check
-//     (op[2] == 1 && ((a == 0 && b == 1 && result == 1) ||
-//                     (a == 1 && b == 0 && result == 0)))
-//   );
-// endmodule
 
 
 
@@ -125,7 +116,7 @@ module FourBitALU(a, b, op, result, less, cin, cout, G, P, set, zero, overflow);
   assign zero = (sets == 4'h0); // set zero if all sets are 0
 
   //Implement overflow detector
-  OverflowDetection flag(.cin(cout2), .cout(cout), .overflow(overflow));
+  OverflowDetection flag(.cin(cout2), .cout(cout), .result(result[3]), .op(op), .overflow(overflow));
 endmodule//FourBitALU
 
 
@@ -175,7 +166,7 @@ module ALU16bit(a, b, cin, less, op, result, cout, set, zero, g, p, overflow);
   ///////////////////////////////
 
   //detect overflow
-  OverflowDetection flag(.cin(C3), .cout(C4), .overflow(overflow));
+  OverflowDetection flag(.cin(C3), .cout(C4), .result(result3[3]), .op(op), .overflow(overflow));
   ///////////////////////////////
 
   //Calculate zero
