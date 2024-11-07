@@ -19,17 +19,17 @@ module ALU16bit(a, b, cin, less, op, result, cout, set, zero, g, p, overflow);
   wire [15:0] b_muxed; // Used to invert b if necessary for subtraction
 
   // Handle the "less" flag
-  assign b_muxed = op[2] ? ~b : b; // Invert b for subtraction (two's complement)
+  //assign b_muxed = op[2] ? ~b : b; // Invert b for subtraction (two's complement)
 
   // Implement Carry Look Ahead Logic
   CLA carry_lookahead(.g0(G0), .p0(P0), .g1(G1), .p1(P1), .g2(G2), .p2(P2), .g3(G3), .p3(P3), 
                        .cin(cin), .C1(C1), .C2(C2), .C3(C3), .C4(C4), .G(g), .P(p)); 
   
   // Instantiate FourBitALUs
-  FourBitALU alu0(.a(a[3:0]),   .b(b_muxed[3:0]),   .op(op), .result(result0), .less(less), .cin(cin), .cout(C1), .G(G0), .P(P0), .set(set0), .overflow(overflow0)); 
-  FourBitALU alu1(.a(a[7:4]),   .b(b_muxed[7:4]),   .op(op), .result(result1), .less(1'b0), .cin(C1),  .cout(C2), .G(G1), .P(P1), .set(set1), .overflow(overflow1));
-  FourBitALU alu2(.a(a[11:8]),  .b(b_muxed[11:8]),  .op(op), .result(result2), .less(1'b0), .cin(C2),  .cout(C3), .G(G2), .P(P2), .set(set2), .overflow(overflow2));
-  FourBitALU alu3(.a(a[15:12]), .b(b_muxed[15:12]), .op(op), .result(result3), .less(1'b0), .cin(C3),  .cout(C4), .G(G3), .P(P3), .set(set3), .overflow(overflow3));
+  FourBitALU alu0(.a(a[3:0]),   .b(b[3:0]),   .op(op), .result(result0), .less(less), .cin(cin), .cout(C1), .G(G0), .P(P0), .set(set0), .overflow(overflow0)); 
+  FourBitALU alu1(.a(a[7:4]),   .b(b[7:4]),   .op(op), .result(result1), .less(1'b0), .cin(C1),  .cout(C2), .G(G1), .P(P1), .set(set1), .overflow(overflow1));
+  FourBitALU alu2(.a(a[11:8]),  .b(b[11:8]),  .op(op), .result(result2), .less(1'b0), .cin(C2),  .cout(C3), .G(G2), .P(P2), .set(set2), .overflow(overflow2));
+  FourBitALU alu3(.a(a[15:12]), .b(b[15:12]), .op(op), .result(result3), .less(1'b0), .cin(C3),  .cout(C4), .G(G3), .P(P3), .set(set3), .overflow(overflow3));
 
   // Detect overflow
   OverflowDetection flag(.cin(C3), .cout(C4), .result(result3[3]), .op(op), .overflow(overflow));
