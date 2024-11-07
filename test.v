@@ -84,7 +84,7 @@ module FourBitALU(a, b, op, result, less, cin, cout, G, P, set, zero, overflow);
     output overflow; // This bit indicates that an overflow has occurred. (Ignores what operation is chosen for ALU)
     
     //Create some wires for the operations
-    wire cout0, cout1, cout2, cout3;
+    wire cout0, cout1, cout2;
     wire G0, G1, G2, G3;
     wire P0, P1, P2, P3;
     wire [3:0] sets; //Wires used to retrieve the output of set from each ALU
@@ -92,13 +92,13 @@ module FourBitALU(a, b, op, result, less, cin, cout, G, P, set, zero, overflow);
     wire initial_cin = op[2] ? 1'b1 : cin;
 
     //Implement Carry Look Ahead Logic
-    CLA carry_lookahead(.g0(G0), .p0(P0), .g1(G1), .p1(P1), .g2(G2), .p2(P2), .g3(G3), .p3(P3), .cin(cin), .C1(cout0), .C2(cout1), .C3(cout2), .C4(cout), .G(G), .P(P)); 
+    CLA carry_lookahead(.g0(G0), .p0(P0), .g1(G1), .p1(P1), .g2(G2), .p2(P2), .g3(G3), .p3(P3), .cin(initial_cin), .C1(cout0), .C2(cout1), .C3(cout2), .C4(cout), .G(G), .P(P)); 
     
     //Declare a ALU for each bit
     OneBitALU alu0(.a(a[0]), .b(b[0]), .cin(initial_cin), .less(less), .op(op), .result(result[0]), .cout(cout0), .g(G0), .p(P0), .set(sets[0]));
     OneBitALU alu1(.a(a[1]), .b(b[1]), .cin(cout0),       .less(1'b0), .op(op), .result(result[1]), .cout(cout1), .g(G1), .p(P1), .set(sets[1]));
     OneBitALU alu2(.a(a[2]), .b(b[2]), .cin(cout1),       .less(1'b0), .op(op), .result(result[2]), .cout(cout2), .g(G2), .p(P2), .set(sets[2]));
-    OneBitALU alu3(.a(a[3]), .b(b[3]), .cin(cout2),       .less(1'b0), .op(op), .result(result[3]), .cout(cout3), .g(G3), .p(P3), .set(sets[3]));
+    OneBitALU alu3(.a(a[3]), .b(b[3]), .cin(cout2),       .less(1'b0), .op(op), .result(result[3]), .cout(cout), .g(G3), .p(P3), .set(sets[3]));
     
     assign set = sets[3]; // assign msb
     assign zero = (result == 4'h0); // set zero if all result bits are 0
@@ -128,22 +128,18 @@ module ALU16bit(a, b, cin, less, op, result, cout, set, zero, g, p, overflow);
   wire set0, set1, set2, set3;
   wire [15:0] b_muxed; // Used to invert b if necessary for subtraction
 
-  // Determine if we are subtracting
-  wire subtractionBit = op[2]; // Use op[2] directly for clarity
-  wire initial_cin = (subtractionBit) ? 1'b1 : cin; // Set the initial carry-in
-
   // Handle the "less" flag
-  assign b_muxed = (subtractionBit) ? ~b : b; // Invert b for subtraction (two's complement)
+  assign b_muxed = op[2] ? ~b : b; // Invert b for subtraction (two's complement)
 
   // Implement Carry Look Ahead Logic
   CLA carry_lookahead(.g0(G0), .p0(P0), .g1(G1), .p1(P1), .g2(G2), .p2(P2), .g3(G3), .p3(P3), 
-                       .cin(initial_cin), .C1(C1), .C2(C2), .C3(C3), .C4(C4), .G(g), .P(p)); 
+                       .cin(cin), .C1(C1), .C2(C2), .C3(C3), .C4(C4), .G(g), .P(p)); 
   
   // Instantiate FourBitALUs
-  FourBitALU alu0(.a(a[3:0]),   .b(b_muxed[3:0]),   .op(op), .result(result0), .less(less), .cin(initial_cin), .cout(C1), .G(G0), .P(P0), .set(set0), .overflow(overflow0)); 
-  FourBitALU alu1(.a(a[7:4]),   .b(b_muxed[7:4]),   .op(op), .result(result1), .less(1'b0), .cin(C1),          .cout(C2), .G(G1), .P(P1), .set(set1), .overflow(overflow1));
-  FourBitALU alu2(.a(a[11:8]),  .b(b_muxed[11:8]),  .op(op), .result(result2), .less(1'b0), .cin(C2),          .cout(C3), .G(G2), .P(P2), .set(set2), .overflow(overflow2));
-  FourBitALU alu3(.a(a[15:12]), .b(b_muxed[15:12]), .op(op), .result(result3), .less(1'b0), .cin(C3),          .cout(C4), .G(G3), .P(P3), .set(set3), .overflow(overflow3));
+  FourBitALU alu0(.a(a[3:0]),   .b(b_muxed[3:0]),   .op(op), .result(result0), .less(less), .cin(cin), .cout(C1), .G(G0), .P(P0), .set(set0), .overflow(overflow0)); 
+  FourBitALU alu1(.a(a[7:4]),   .b(b_muxed[7:4]),   .op(op), .result(result1), .less(1'b0), .cin(C1),  .cout(C2), .G(G1), .P(P1), .set(set1), .overflow(overflow1));
+  FourBitALU alu2(.a(a[11:8]),  .b(b_muxed[11:8]),  .op(op), .result(result2), .less(1'b0), .cin(C2),  .cout(C3), .G(G2), .P(P2), .set(set2), .overflow(overflow2));
+  FourBitALU alu3(.a(a[15:12]), .b(b_muxed[15:12]), .op(op), .result(result3), .less(1'b0), .cin(C3),  .cout(C4), .G(G3), .P(P3), .set(set3), .overflow(overflow3));
 
   // Detect overflow
   OverflowDetection flag(.cin(C3), .cout(C4), .result(result3[3]), .op(op), .overflow(overflow));
@@ -159,4 +155,3 @@ module ALU16bit(a, b, cin, less, op, result, cout, set, zero, g, p, overflow);
   assign result = (op[2] && result3[3] == 1) ? ~{result3, result2, result1, result0} : {result3, result2, result1, result0}; // Directly combine results
   assign cout = C4; // Connect the final carry-out
 endmodule // ALU16bit
-

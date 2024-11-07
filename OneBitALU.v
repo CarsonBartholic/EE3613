@@ -34,8 +34,8 @@ module OneBitALU(a, b, cin, less, op, result, cout, g, p, set);
   assign set = sum;
   assign cout = carry;
   //Determine desired operation and return the results
-  assign result = (op[1:0] == 2'b00) ? and_res :
-                  (op[1:0] == 2'b01) ? or_res :
+  assign result = (op[1:0] == 2'b00) ? and_result :
+                  (op[1:0] == 2'b01) ? or_result :
                   (op[1:0] == 2'b10) ? sum :
-                  slt_res;
+                  slt_result;
 endmodule//OneBitALU

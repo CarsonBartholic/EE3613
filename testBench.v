@@ -30,7 +30,7 @@ module testBench;
         $display("Addition: result = %h, cout = %b, zero = %b", result, cout, zero);
 
         // Test case 2: Subtraction
-        a = 16'b0000000000000111; b = 16'b0000000000000011; cin = 0; less = 0; op = 3'b110;
+        a = 16'b0000000000000111; b = 16'b0000000000000011; cin = 1; less = 0; op = 3'b110;
         #10;
         $display("Subtraction: result = %h, cout = %b, zero = %b", result, cout, zero);
 
