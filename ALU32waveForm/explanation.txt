@@ -1,0 +1,6 @@
+The wave form for the 32 bit ALU shows the binary representation each variable used in the test bench as it was executed. The test bench was written in a way so that 
+every 10nsec the next test would execute. That is why the values of the variabes change every 10nsec increment. Since there was a total of 4 tests the test bench 
+took approimently 40nsec to complete. Each value shown in the wave form does not show the entire 32 bit length because the waveform does not include zero padding even 
+though all inputs besides the op code were 32 bits. In the waveform zero and overflow reamin at zero the whole time because none of our tests included any operations that
+would have caused an overflow or the result of the operation at 0. The set variable remains at Z the whole time since our ALU does not perform any comparison operations like
+slt, so that line is disconnected.
