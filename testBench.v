@@ -68,6 +68,9 @@ module tests32;
 
     //Run test cases
     initial begin
+        $dumpfile("ALU32bitWaveForm.vcd"); //Sends the wave form to our dump file
+        $dumpvars(0, tests32);             //Dump all variables from top level
+
         $monitor("a = %b, b = %b, op = %b | result = %b, set = %b, zero = %b, overflow = %b", a, b, op, result, set, zero, overflow);
 
         //Test Case 1: Addition
